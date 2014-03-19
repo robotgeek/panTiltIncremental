@@ -73,7 +73,8 @@ void setup()
   
   //use the writeMicroseconds to set the servos to their default positions
   panServo.writeMicroseconds(panValue); 
-  tiltServo.writeMicroseconds(tiltValue);
+  tiltServo.writeMicroseconds(tiltValue); 
+    
 } 
 
 void loop() 
@@ -90,6 +91,11 @@ void loop()
    {
      horizontalValueMapped = map(horizontalValue, 0, 1023, speed, -speed); //Map analog value from native joystick value (0 to 1023) to incremental change (speed to -speed). Note that the program is mapping inversely - this is to allow the joystick movement to match the servo movement
      panValue = panValue - horizontalValueMapped; //add mapped shoulder joystick value to present Shoulder Value (positive values of joyShoulderMapped will increase the position, negative values will decrease the position)  Note that the program is mapping inversely - this is to allow the joystick movement to match the servo movement
+   
+     //even though the servos have min/max value built in when servo.attach() was called, the program must still keep the
+     //panValue variable within the min/max bounds, or the turret may become unresponsive
+     panValue = max(panValue, PAN_MIN);  //use the max() function to make sure the value never falls below PAN_MIN (0 degrees)
+     panValue = min(panValue, PAN_MAX);  //use the min() function to make sute the value never goes above PAN_MAX (180 degrees)
    }
       
    //only update the shoulder joint if the joystick is outside the deadzone (i.e. moved oustide the center position)
@@ -97,6 +103,11 @@ void loop()
    {
      verticalValueMapped = map(verticalValue, 0, 1023, speed, -speed); //Map analog value from native joystick value (0 to 1023) to incremental change (speed to -speed)
      tiltValue = tiltValue - verticalValueMapped; //add mapped shoulder joystick value to present Shoulder Value (positive values of joyShoulderMapped will increase the position, negative values will decrease the position)
+  
+     //even though the servos have min/max value built in when servo.attach() was called, the program must still keep the
+     //tiltValue variable within the min/max bounds, or the turret may become unresponsive
+     tiltValue = max(tiltValue, TILT_MIN);//use the max() function to make sure the value never falls below TILT_MIN(0 degrees)
+     tiltValue = min(tiltValue, TILT_MAX);//use the min() function to make sute the value never goes above TILT_MAX  (180 degrees)
    }
 
   //use the writeMicroseconds to set the servos to their new positions
